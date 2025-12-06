@@ -43,6 +43,8 @@ namespace AEGI_Game
             buttonExit.Visible = false;
             labelRecord.Visible = false;
             labelPause.Visible = false;
+            buttonContinue.Visible = false;
+            buttonPause.Visible = false;
             timer.Enabled = false;
             _soundPlayer = new SoundPlayer("music.wav");
             KeyPreview = true;
@@ -245,6 +247,8 @@ namespace AEGI_Game
                 _soundPlayer.Play();
                 _currentGameState = GameState.GameOver;
                 labelPause.Visible = false;
+                buttonContinue.Visible = false;
+                buttonPause.Visible = false;
             }
 
             player.BringToFront();
@@ -456,6 +460,8 @@ namespace AEGI_Game
             buttonExit.Visible = false;
             labelRecord.Visible = false;
             labelPause.Visible = false;
+            buttonContinue.Visible = false;
+            buttonPause.Visible = true;
             countCoins = 0;
             labelcoins.Text = "� ��� �����: 0";
             coin.Top = -600;
@@ -471,6 +477,8 @@ namespace AEGI_Game
             {
                 timer.Enabled = true;
                 _currentGameState = GameState.Game;
+                buttonContinue.Visible = false;
+                buttonPause.Visible = true;
             }
         }
 
@@ -526,31 +534,33 @@ namespace AEGI_Game
                 timer.Enabled = false;
                 _currentGameState = GameState.Pause;
                 labelPause.Visible = true;
+                buttonContinue.Visible = true;
+                buttonPause.Visible = false;
             }
             else if (_currentGameState == GameState.Pause)
             {
                 timer.Enabled = true;
                 _currentGameState = GameState.Game;
                 labelPause.Visible = false;
+                buttonContinue.Visible = false;
+                buttonPause.Visible = true;
             }
         }
 
-        private static string? GetSoundFilePath()
+        private void buttonPause_Click(object sender, EventArgs e)
         {
-            string baseDir = AppDomain.CurrentDomain.BaseDirectory;
-            string resourcesPath = Path.Combine(baseDir, "Resources", "music.wav");
-            if (File.Exists(resourcesPath))
+            if (_currentGameState == GameState.Game || _currentGameState == GameState.Pause)
             {
-                return resourcesPath;
+                HandlePauseToggle();
             }
+        }
 
-            string rootPath = Path.Combine(baseDir, "music.wav");
-            if (File.Exists(rootPath))
+        private void buttonContinue_Click(object sender, EventArgs e)
+        {
+            if (_currentGameState == GameState.Pause)
             {
-                return rootPath;
+                HandlePauseToggle();
             }
-
-            return null;
         }
 
         private static string GetRecordFilePath()
