@@ -48,6 +48,7 @@
             labelRecord = new Label();
             bomb = new PictureBox();
             bomb1 = new PictureBox();
+            labelPause = new Label();
             ((System.ComponentModel.ISupportInitialize)pictureBox1).BeginInit();
             ((System.ComponentModel.ISupportInitialize)pictureBox3).BeginInit();
             ((System.ComponentModel.ISupportInitialize)player).BeginInit();
@@ -263,12 +264,25 @@
             bomb1.TabIndex = 19;
             bomb1.TabStop = false;
             // 
+            // labelPause
+            // 
+            labelPause.AutoSize = true;
+            labelPause.BackColor = Color.IndianRed;
+            labelPause.Font = new Font("Times New Roman", 25.8000011F, FontStyle.Bold, GraphicsUnit.Point, 204);
+            labelPause.ForeColor = SystemColors.Control;
+            labelPause.Location = new Point(361, 236);
+            labelPause.Name = "labelPause";
+            labelPause.Size = new Size(126, 51);
+            labelPause.TabIndex = 20;
+            labelPause.Text = "Пауза";
+            // 
             // FormOurGame
             // 
             AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
             BackColor = Color.Silver;
             ClientSize = new Size(840, 650);
+            Controls.Add(labelPause);
             Controls.Add(bomb1);
             Controls.Add(bomb);
             Controls.Add(buttonStartplay);
@@ -293,6 +307,7 @@
             Load += FormOurGame_Load;
             KeyDown += FormOurGame_KeyDown;
             KeyPress += FormOurGame_KeyPress;
+            KeyUp += FormOurGame_KeyUp;
             ((System.ComponentModel.ISupportInitialize)pictureBox1).EndInit();
             ((System.ComponentModel.ISupportInitialize)pictureBox3).EndInit();
             ((System.ComponentModel.ISupportInitialize)player).EndInit();
@@ -330,5 +345,6 @@
         private Label labelRecord;
         private PictureBox bomb;
         private PictureBox bomb1;
+        private Label labelPause;
     }
 }
