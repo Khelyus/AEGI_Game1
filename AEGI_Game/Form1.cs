@@ -11,17 +11,18 @@ namespace AEGI_Game
     public partial class FormOurGame : Form
     {
         private Point position;
-        private bool dragging; //переменная, чтобы знать передвигаем ли мы сейчас окно
-        private bool lose = false; //проигрыш, делаем машинку неподвижной
+        private bool dragging; //пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ, пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ
         private int countCoins = 0;
         int[] recordArray = new int[0];
         int record = 0;
         private SoundPlayer _soundPlayer;
 
-        int speed = 5; //теперь глобальная для ускорения машинки
+        int speed = 5; //пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ
         int speedForControl;
         int coinSpeed = 1;
         int playerSpeed = 5;
+        private GameState _currentGameState;
+        
 
 
         public FormOurGame()
@@ -41,9 +42,13 @@ namespace AEGI_Game
             buttonStartplay.Visible = true;
             buttonExit.Visible = false;
             labelRecord.Visible = false;
+            labelPause.Visible = false;
+            buttonContinue.Visible = false;
+            buttonPause.Visible = false;
             timer.Enabled = false;
             _soundPlayer = new SoundPlayer("music.wav");
             KeyPreview = true;
+            _currentGameState = GameState.Start;
         }
 
 
@@ -80,12 +85,15 @@ namespace AEGI_Game
 
         private void timer_Tick(object sender, EventArgs e)
         {
+            if (_currentGameState != GameState.Game)
+                return;
+
             pictureBox1.Top += speed;
             pictureBox3.Top += speed;
 
             int carspeed = 4;
-            enemy1.Top += carspeed;//враги для нашей полосы
-            enemy2.Top += carspeed;//враги для нашей полосы
+            enemy1.Top += carspeed;//пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
+            enemy2.Top += carspeed;//пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
             enemy3.Top += 3 + playerSpeed;
             enemy4.Top += 3 + playerSpeed;
             coin.Top += coinSpeed + playerSpeed;
@@ -233,13 +241,14 @@ namespace AEGI_Game
                 labelLose.Visible = true;
                 buttonRestart.Visible = true;
                 buttonExit.Visible = true;
-                lose = true;
                 record = FindMax(recordArray);
-                record = int.Parse(File.ReadAllText("C:/Users/Acer/Desktop/result.txt"));
-                labelRecord.Text = "Рекорд: " + record.ToString();
+                labelRecord.Text = "пїЅпїЅпїЅпїЅпїЅпїЅ: " + record.ToString();
                 labelRecord.Visible = true;
                 _soundPlayer.Play();
-
+                _currentGameState = GameState.GameOver;
+                labelPause.Visible = false;
+                buttonContinue.Visible = false;
+                buttonPause.Visible = false;
             }
 
             player.BringToFront();
@@ -247,7 +256,7 @@ namespace AEGI_Game
             {
                 countCoins++;
                 recordArray = AddElement(recordArray, countCoins);
-                labelcoins.Text = "У вас монет:" + countCoins.ToString();
+                labelcoins.Text = "пїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ:" + countCoins.ToString();
                 coin.Top = -500;
                 Random rand = new Random();
                 coin.Left = rand.Next(430, 610);
@@ -255,7 +264,7 @@ namespace AEGI_Game
             if (player.Bounds.IntersectsWith(bomb.Bounds))
             {
                 countCoins--;
-                labelcoins.Text = "У вас монет:" + countCoins.ToString();
+                labelcoins.Text = "пїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ:" + countCoins.ToString();
                 bomb.Top = -500;
                 Random rand = new Random();
                 bomb.Left = rand.Next(430, 610);
@@ -264,7 +273,7 @@ namespace AEGI_Game
             if (player.Bounds.IntersectsWith(bomb1.Bounds))
             {
                 countCoins--;
-                labelcoins.Text = "У вас монет:" + countCoins.ToString();
+                labelcoins.Text = "пїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ:" + countCoins.ToString();
                 bomb1.Top = -500;
                 Random rand = new Random();
                 bomb1.Left = rand.Next(430, 610);
@@ -355,7 +364,7 @@ namespace AEGI_Game
             {
                 countCoins++;
                 recordArray = AddElement(recordArray, countCoins);
-                labelcoins.Text = "У вас монет:" + countCoins.ToString();
+                labelcoins.Text = "пїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ:" + countCoins.ToString();
                 coin1.Top = -500;
                 Random rand = new Random();
                 coin1.Left = rand.Next(430, 610);
@@ -398,9 +407,11 @@ namespace AEGI_Game
 
         private void FormOurGame_KeyDown(object sender, KeyEventArgs e)
         {
-            if (lose) { return; }
+            if (_currentGameState != GameState.Game)
+                return;
+            
             int speed1 = 10;
-            if ((e.KeyCode == Keys.Left || e.KeyCode == Keys.A) && (player.Left > 185)) //для ограничения в полосе
+            if ((e.KeyCode == Keys.Left || e.KeyCode == Keys.A) && (player.Left > 185)) //пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
             {
                 player.Left -= speed1;
                 speedForControl = 15;
@@ -425,27 +436,38 @@ namespace AEGI_Game
                 speed -= 5;
                 playerSpeed -= 5;
             }
+        }
 
+        private void FormOurGame_KeyUp(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Space)
+            {
+                e.SuppressKeyPress = true;
+                e.Handled = true;
+                HandlePauseToggle();
+            }
         }
 
         private void buttonRestart_Click_1(object sender, EventArgs e)
         {
-            _soundPlayer.Stop();
+            _soundPlayer?.Stop();
             enemy1.Top = -130;
             enemy2.Top = -400;
             enemy3.Top = -130;
             enemy4.Top = -400;
             labelLose.Visible = false;
             buttonRestart.Visible = false;
-            timer.Enabled = true;
-            lose = false;
             buttonExit.Visible = false;
             labelRecord.Visible = false;
-
+            labelPause.Visible = false;
+            buttonContinue.Visible = false;
+            buttonPause.Visible = true;
             countCoins = 0;
-            labelcoins.Text = "У вас монет: 0";
+            labelcoins.Text = "пїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ: 0";
             coin.Top = -600;
             coin1.Top = -700;
+            _currentGameState = GameState.Game;
+            timer.Enabled = true;
         }
 
         private void buttonStartplay_Click(object sender, EventArgs e)
@@ -454,6 +476,9 @@ namespace AEGI_Game
             if (buttonStartplay.Visible == false)
             {
                 timer.Enabled = true;
+                _currentGameState = GameState.Game;
+                buttonContinue.Visible = false;
+                buttonPause.Visible = true;
             }
         }
 
@@ -484,8 +509,11 @@ namespace AEGI_Game
                 }
             }
 
-      
-            string filePath = "C:/Users/Acer/Desktop/result.txt";
+            string filePath = GetRecordFilePath();
+            if (!File.Exists(filePath))
+            {
+                File.WriteAllText(filePath, "0");
+            }
             if (File.Exists(filePath))
             {
                 string existingRecord = File.ReadAllText(filePath);
@@ -495,9 +523,50 @@ namespace AEGI_Game
                 }
             }
 
-          
             File.WriteAllText(filePath, max.ToString());
             return max;
+        }
+
+        private void HandlePauseToggle()
+        {
+            if (_currentGameState == GameState.Game)
+            {
+                timer.Enabled = false;
+                _currentGameState = GameState.Pause;
+                labelPause.Visible = true;
+                buttonContinue.Visible = true;
+                buttonPause.Visible = false;
+            }
+            else if (_currentGameState == GameState.Pause)
+            {
+                timer.Enabled = true;
+                _currentGameState = GameState.Game;
+                labelPause.Visible = false;
+                buttonContinue.Visible = false;
+                buttonPause.Visible = true;
+            }
+        }
+
+        private void buttonPause_Click(object sender, EventArgs e)
+        {
+            if (_currentGameState == GameState.Game || _currentGameState == GameState.Pause)
+            {
+                HandlePauseToggle();
+            }
+        }
+
+        private void buttonContinue_Click(object sender, EventArgs e)
+        {
+            if (_currentGameState == GameState.Pause)
+            {
+                HandlePauseToggle();
+            }
+        }
+
+        private static string GetRecordFilePath()
+        {
+            string desktopPath = Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory);
+            return Path.Combine(desktopPath, "result.txt");
         }
     }
 }
